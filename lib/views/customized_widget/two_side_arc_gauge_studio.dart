@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 
-class ContainerScreen extends StatefulWidget {
-  const ContainerScreen({Key? key}) : super(key: key);
+class TwoSideArcGaugeStudio extends StatefulWidget {
+  const TwoSideArcGaugeStudio({super.key});
 
   @override
-  State<ContainerScreen> createState() => _ContainerScreenState();
+  State<TwoSideArcGaugeStudio> createState() => _TwoSideArcGaugeStudioState();
 }
 
-class _ContainerScreenState extends State<ContainerScreen> {
+class _TwoSideArcGaugeStudioState extends State<TwoSideArcGaugeStudio> {
   double _width = 200;
   double _height = 200;
   Color _color = Colors.blue;
@@ -125,20 +124,24 @@ class MyWidget extends StatelessWidget {
                           _buildSlider('Opacity', _opacity, 0, 1, (val) {
                             setState(() => _opacity = val);
                           }),
-                          _buildSlider('Border Radius', _borderRadius, 0, 150, (val) {
+                          _buildSlider('Border Radius', _borderRadius, 0, 150,
+                              (val) {
                             setState(() => _borderRadius = val);
                           }),
                           const Divider(color: Color(0xFF3D3D54)),
                           _buildSectionTitle('Border'),
-                          _buildColorPicker('Border Color', _borderColor, (val) {
+                          _buildColorPicker('Border Color', _borderColor,
+                              (val) {
                             setState(() => _borderColor = val);
                           }),
-                          _buildSlider('Border Width', _borderWidth, 0, 10, (val) {
+                          _buildSlider('Border Width', _borderWidth, 0, 10,
+                              (val) {
                             setState(() => _borderWidth = val);
                           }),
                           const Divider(color: Color(0xFF3D3D54)),
                           _buildSectionTitle('Effects'),
-                          _buildSlider('Rotation (°)', _rotation, 0, 360, (val) {
+                          _buildSlider('Rotation (°)', _rotation, 0, 360,
+                              (val) {
                             setState(() => _rotation = val);
                           }),
                           _buildSwitchOption('Shadow', _hasShadow, (val) {
@@ -268,7 +271,8 @@ class MyWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildColorPicker(String label, Color color, Function(Color) onChanged) {
+  Widget _buildColorPicker(
+      String label, Color color, Function(Color) onChanged) {
     final List<Color> colors = [
       Colors.red,
       Colors.pink,
@@ -346,7 +350,8 @@ class MyWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildSwitchOption(String label, bool value, Function(bool) onChanged) {
+  Widget _buildSwitchOption(
+      String label, bool value, Function(bool) onChanged) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [

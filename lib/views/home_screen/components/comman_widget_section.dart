@@ -37,7 +37,7 @@ class CommanWidgetSection extends StatelessWidget {
               WidgetCard(
                 title: 'Container',
                 icon: Icons.crop_square_rounded,
-                color: Colors.blue,
+                iconColor: Colors.blue,
                 onTap: () => Navigator.pushNamed(
                   context,
                   RouteHelper.containerScreen,

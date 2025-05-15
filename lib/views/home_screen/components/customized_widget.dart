@@ -16,7 +16,7 @@ class CustomizedWidgetSection extends StatelessWidget {
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: Colors.white, // Change this
           ),
         ),
         const SizedBox(height: 8),
@@ -37,7 +37,7 @@ class CustomizedWidgetSection extends StatelessWidget {
               WidgetCard(
                 title: 'Container',
                 icon: Icons.crop_square_rounded,
-                color: Colors.blue,
+                iconColor: Colors.blue,
                 onTap: () => Navigator.pushNamed(
                   context,
                   RouteHelper.containerScreen,
