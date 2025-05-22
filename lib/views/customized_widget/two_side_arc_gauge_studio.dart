@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_canvas/component/code_section.dart';
+import 'package:flutter_canvas/component/edit_section_title.dart';
 import 'package:flutter_canvas/views/customized_widget/two_side_arc_gauge_screen.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:provider/provider.dart';
@@ -288,45 +289,72 @@ $_markdownCode
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              _buildSectionTitle('Dimensions', theme),
-                              _buildSlider('Width', _width, 50, 300, (val) {
-                                setState(() => _width = val);
-                              }, theme),
-                              _buildSlider('Height', _height, 50, 300, (val) {
-                                setState(() => _height = val);
-                              }, theme),
-                              Divider(color: theme.dividerColor),
-                              _buildSectionTitle('Appearance', theme),
-                              _buildColorPicker('Color', _color, (val) {
-                                setState(() => _color = val);
-                              }, theme),
-                              _buildSlider('Opacity', _opacity, 0, 1, (val) {
-                                setState(() => _opacity = val);
-                              }, theme),
-                              _buildSlider(
-                                  'Border Radius', _borderRadius, 0, 150,
-                                  (val) {
-                                setState(() => _borderRadius = val);
-                              }, theme),
-                              Divider(color: theme.dividerColor),
-                              _buildSectionTitle('Border', theme),
-                              _buildColorPicker('Border Color', _borderColor,
-                                  (val) {
-                                setState(() => _borderColor = val);
-                              }, theme),
-                              _buildSlider('Border Width', _borderWidth, 0, 10,
-                                  (val) {
-                                setState(() => _borderWidth = val);
-                              }, theme),
-                              Divider(color: theme.dividerColor),
-                              _buildSectionTitle('Effects', theme),
-                              _buildSlider('Rotation (°)', _rotation, 0, 360,
-                                  (val) {
-                                setState(() => _rotation = val);
-                              }, theme),
-                              _buildSwitchOption('Shadow', _hasShadow, (val) {
-                                setState(() => _hasShadow = val);
-                              }, theme),
+                              EditSectionTitle(
+                                title: 'Dimensions',
+                                displayWidget: Column(
+                                  children: [
+                                    _buildSlider('Width', _width, 50, 300,
+                                        (val) {
+                                      setState(() => _width = val);
+                                    }, theme),
+                                    _buildSlider('Height', _height, 50, 300,
+                                        (val) {
+                                      setState(() => _height = val);
+                                    }, theme),
+                                  ],
+                                ),
+                              ),
+                              EditSectionTitle(
+                                title: 'Appearance',
+                                displayWidget: Column(
+                                  children: [
+                                    _buildColorPicker('Color', _color, (val) {
+                                      setState(() => _color = val);
+                                    }, theme),
+                                    _buildSlider('Opacity', _opacity, 0, 1,
+                                        (val) {
+                                      setState(() => _opacity = val);
+                                    }, theme),
+                                    _buildSlider(
+                                        'Border Radius', _borderRadius, 0, 150,
+                                        (val) {
+                                      setState(() => _borderRadius = val);
+                                    }, theme),
+                                  ],
+                                ),
+                              ),
+                              EditSectionTitle(
+                                title: 'Border',
+                                displayWidget: Column(
+                                  children: [
+                                    _buildColorPicker(
+                                        'Border Color', _borderColor, (val) {
+                                      setState(() => _borderColor = val);
+                                    }, theme),
+                                    _buildSlider(
+                                        'Border Width', _borderWidth, 0, 10,
+                                        (val) {
+                                      setState(() => _borderWidth = val);
+                                    }, theme),
+                                  ],
+                                ),
+                              ),
+                              EditSectionTitle(
+                                title: 'Effects',
+                                displayWidget: Column(
+                                  children: [
+                                    _buildSlider(
+                                        'Rotation (°)', _rotation, 0, 360,
+                                        (val) {
+                                      setState(() => _rotation = val);
+                                    }, theme),
+                                    _buildSwitchOption('Shadow', _hasShadow,
+                                        (val) {
+                                      setState(() => _hasShadow = val);
+                                    }, theme),
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -359,119 +387,6 @@ $_markdownCode
 
           // _buildCodeOverlay(context), // Add the overlay to the stack
         ],
-      ),
-    );
-  }
-
-  GestureDetector codingSection(BuildContext context, ThemeData theme) {
-    return GestureDetector(
-      onPanUpdate: (dragUpdate) {
-        var newPosition = dragUpdate.delta;
-
-        //update the height of the container with codingBoxheight variable that is directly linked to the height of the container
-        setState(() {
-          codingBoxheight -= newPosition.dy;
-        });
-      },
-      child: Container(
-        constraints: BoxConstraints(
-          minHeight: 100,
-          maxHeight: MediaQuery.of(context).size.height,
-        ),
-        height: codingBoxheight, // Not needed anymore
-
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-
-        decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceVariant, // Use a theme color
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(12),
-            topRight: Radius.circular(12),
-          ),
-          border: Border.all(
-            color: theme.dividerColor.withAlpha(30),
-            width: 1,
-          ),
-        ),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Code Preview',
-                  style: theme.textTheme.titleMedium
-                      ?.copyWith(fontWeight: FontWeight.bold),
-                ),
-                const Icon(Icons.drag_handle_outlined),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton.icon(
-                    icon: const Icon(Icons.code),
-                    label: const Text('Copy Code'),
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        side: BorderSide(
-                          color: theme.dividerColor.withAlpha(30),
-                          width: 1,
-                        ),
-                      ),
-                      foregroundColor: theme.primaryColorLight,
-                      backgroundColor: Colors.transparent,
-                      iconColor: theme.primaryColorLight,
-                      textStyle: TextStyle(color: theme.primaryColorLight),
-                    ),
-
-                    onPressed: () {
-                      Clipboard.setData(ClipboardData(text: _markdownCode));
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: const Text('Code copied to clipboard'),
-                          backgroundColor:
-                              theme.colorScheme.secondary, // Use theme color
-                        ),
-                      );
-                    },
-                    // Style from ElevatedButtonTheme
-                  ),
-                ),
-              ],
-            ),
-            Expanded(
-              child: Container(
-                color: Colors.black,
-                child: Markdown(
-                  // controller: controller,
-                  selectable: true,
-                  data: _markdownData(),
-                  styleSheet: MarkdownStyleSheet(
-                    code: TextStyle(
-                      color: theme.primaryColorLight,
-                      fontSize: 16,
-                      backgroundColor: Colors.transparent,
-                    ),
-                    codeblockDecoration: const BoxDecoration(
-                      color: Colors.transparent,
-                    ),
-                  ),
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSectionTitle(String title, ThemeData theme) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Text(
-        title,
-        style: theme.textTheme.titleLarge
-            ?.copyWith(fontSize: 16), // Use theme text style
       ),
     );
   }
