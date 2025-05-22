@@ -1,9 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_canvas/constants/app_colors.dart';
 
-enum ArrowSide { LEFT, RIGHT, NONE }
+enum ArrowSide { left, right, None }
 
 class TyrePressureAnimationWidget extends StatefulWidget {
   final double rearTyrePressure;
@@ -15,7 +14,7 @@ class TyrePressureAnimationWidget extends StatefulWidget {
       {super.key,
       required this.rearTyrePressure,
       required this.frontTyrePressure,
-      this.arrowSide = ArrowSide.NONE,
+      this.arrowSide = ArrowSide.None,
       this.bgColor,
       this.sideBgColor});
 
@@ -82,13 +81,13 @@ class _TyrePressureAnimationWidgetState
                 arrowSide: widget.arrowSide,
                 leftProgressColor: (widget.frontTyrePressure < 24 ||
                         widget.frontTyrePressure > 29)
-                    ? AppColors.darkAppBar
-                    : AppColors.lightPrimary, //for front tyre
+                    ? Colors.red
+                    : Colors.green, //for front tyre
                 rightProgressColor: (widget.rearTyrePressure < 27 ||
                         widget.rearTyrePressure > 32)
-                    ? AppColors.darkAppBar
-                    : AppColors.lightPrimary, //for rear tyre
-                progressArrowColor: AppColors.lightOnPrimary,
+                    ? Colors.red
+                    : Colors.green, //for rear tyre
+                progressArrowColor: Colors.white,
                 arrowSize: 5,
                 gapSize: 2),
           );
@@ -115,7 +114,7 @@ class TyerMeterPainter extends CustomPainter {
   final Color? sideBgColor;
 
   TyerMeterPainter(
-      {this.arrowSide = ArrowSide.NONE,
+      {this.arrowSide = ArrowSide.None,
       this.sideBgColor,
       super.repaint,
       required this.leftTyrePressure,
@@ -178,7 +177,7 @@ class TyerMeterPainter extends CustomPainter {
       thickPaint..color = sideBgColor ?? Colors.white,
     );
 
-    // RightBack ground arc
+    // rightBack ground arc
 
     final rightBackStartAngle = angleToRadians(270 + gapWidth);
     final rightBackSweepAngle = angleToRadians(285 - 270 - gapWidth);
@@ -201,7 +200,7 @@ class TyerMeterPainter extends CustomPainter {
       leftBackStartAngle,
       leftBackSweepAngle / 100 * leftValuePercentage,
       false,
-      thickPaint..color = leftProgressColor ?? AppColors.darkPrimary,
+      thickPaint..color = leftProgressColor ?? Colors.red,
     );
 
     double rightValue = rightTyrePressure;
@@ -215,18 +214,18 @@ class TyerMeterPainter extends CustomPainter {
       angleToRadians(285),
       angleToRadians(270 - 285 + gapWidth) / 100 * rightValuePercentage,
       false,
-      thickPaint..color = rightProgressColor ?? AppColors.lightPrimary,
+      thickPaint..color = rightProgressColor ?? Colors.green,
     );
     Offset progressEndPoint = const Offset(0, 0);
 
-    if (arrowSide == ArrowSide.LEFT) {
+    if (arrowSide == ArrowSide.left) {
       progressEndPoint = angleToOffset(
         center,
         255 + (leftValuePercentage / 100) * (270 - gap / 2 - 255),
         w * 1.5 - 20,
       );
     }
-    if (arrowSide == ArrowSide.RIGHT) {
+    if (arrowSide == ArrowSide.right) {
       progressEndPoint = angleToOffset(
         center,
         radiansToDegrees(rightBackStartAngle) +
@@ -262,7 +261,7 @@ class TyerMeterPainter extends CustomPainter {
       ..close(); // Close the path to form a triangle
 
 // Draw the triangle
-    if (arrowSide != ArrowSide.NONE) {
+    if (arrowSide != ArrowSide.None) {
       canvas.drawPath(path, Paint()..color = progressArrowColor ?? Colors.grey);
     }
   }

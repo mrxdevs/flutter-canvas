@@ -1,5 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_canvas/component/code_section.dart';
+import 'package:flutter_canvas/views/customized_widget/two_side_arc_gauge_screen.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:provider/provider.dart';
+import 'dart:math' as math;
+
+import '../../providers/theme_notifier.dart'; // For min/max and angle conversion
+
+// Enum for code overlay state
+enum CodeOverlayState { hidden, normal, maximized }
 
 class TwoSideArcGaugeStudio extends StatefulWidget {
   const TwoSideArcGaugeStudio({super.key});
@@ -17,214 +27,451 @@ class _TwoSideArcGaugeStudioState extends State<TwoSideArcGaugeStudio> {
   double _rotation = 0.0;
   Color _borderColor = Colors.transparent;
   double _borderWidth = 0;
-  List<BoxShadow>? _boxShadow;
+  // List<BoxShadow>? _boxShadow; // Not used in generated code, can be removed if not planned
   bool _hasShadow = false;
 
-  String get _generatedCode => '''
+  // variable for stats
+  bool isShowStats = false;
+
+  //Coding tab variables
+  double codingBoxheight = 100;
+
+  final String _markdownCode = """
+```dart
 import 'package:flutter/material.dart';
 
-class MyWidget extends StatelessWidget {
+class WidgetCard extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final Color
+      iconColor; // Keep specific icon color if needed, or derive from theme
+  final VoidCallback onTap;
+  final Widget? displayWidget;
+
+  const WidgetCard({
+    required this.title,
+    required this.icon,
+    required this.iconColor, // Changed from 'color' to 'iconColor' for clarity
+    required this.onTap,
+    super.key,
+    this.displayWidget,
+  });
+
   @override
   Widget build(BuildContext context) {
-    return Transform.rotate(
-      angle: ${_rotation * 3.14159 / 180},
-      child: Container(
-        width: $_width,
-        height: $_height,
-        decoration: BoxDecoration(
-          color: Color(0x${(_color.value & 0xFFFFFF).toRadixString(16).padLeft(6, '0')}${(_opacity * 255).toInt().toRadixString(16).padLeft(2, '0')}),
-          borderRadius: BorderRadius.circular($_borderRadius),
-          border: Border.all(
-            color: Color(0x${_borderColor.value.toRadixString(16).padLeft(8, '0')}),
-            width: $_borderWidth,
-          ),
-          ${_hasShadow ? 'boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 10, offset: Offset(0, 5))],' : ''}
+    final theme = Theme.of(context); // Get the current theme
+
+    return SizedBox(
+      height: 150,
+      width: 150, // Consider making this responsive or part of GridView sizing
+      child: GestureDetector(
+        onTap: onTap,
+        child: Stack(
+          children: [
+            displayWidget ?? const SizedBox(),
+            Card(
+              // CardTheme from AppThemes will be applied here
+              // elevation: 5, // Handled by CardTheme
+              // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)), // Handled by CardTheme
+              // color: const Color(0xFF2D2D44), // Handled by CardTheme
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        // Use a color derived from the theme or a fixed one if it's brand-specific
+                        color: iconColor.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(icon, size: 40, color: iconColor),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      title,
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        // color: Colors.white, // Handled by TextTheme in Card
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
-}
-''';
+}""";
+
+  String _markdownData() => """
+$_markdownCode
+
+""";
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context); // Get theme here
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
+
     return Scaffold(
-      backgroundColor: const Color(0xFF1E1E2C),
       appBar: AppBar(
-        title: const Text(
-          'Container Studio',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-        ),
-        backgroundColor: const Color(0xFF2D2D44),
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
+        title: const Text('Two Side ARC'), // Style handled by AppBarTheme
+
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 24),
+            child: IconButton(
+              icon: Icon(
+                themeNotifier.isDarkMode
+                    ? Icons.wb_sunny
+                    : Icons.nightlight_round,
+              ),
+              onPressed: () {
+                themeNotifier.toggleTheme();
+              },
+              tooltip: 'Toggle Theme',
+            ),
+          ),
+        ],
       ),
-      body: Column(
+      body: Stack(
+        // Use Stack to overlay the code window
         children: [
-          Expanded(
-            child: Row(
-              children: [
-                // Left panel - Canvas area
-                Expanded(
-                  flex: 3,
-                  child: Container(
-                    color: const Color(0xFF2D2D44),
-                    margin: const EdgeInsets.all(16),
-                    padding: const EdgeInsets.all(16),
-                    child: Center(
-                      child: Transform.rotate(
-                        angle: _rotation * 3.14159 / 180,
-                        child: Container(
-                          width: _width,
-                          height: _height,
-                          decoration: BoxDecoration(
-                            color: _color.withOpacity(_opacity),
-                            borderRadius: BorderRadius.circular(_borderRadius),
-                            border: Border.all(
-                              color: _borderColor,
-                              width: _borderWidth,
+          Column(
+            children: [
+              Expanded(
+                child: Row(
+                  children: [
+                    // Left panel - Canvas area
+                    Expanded(
+                        flex: 3,
+                        child: Stack(
+                          children: [
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width,
+                              height: MediaQuery.of(context).size.height,
+                              child: const TyrePressureAnimationWidget(
+                                rearTyrePressure: 29,
+                                frontTyrePressure: 31,
+                                bgColor: Colors.grey,
+                                sideBgColor: Colors.white,
+                                arrowSide: ArrowSide.left,
+                              ),
                             ),
-                            boxShadow: _hasShadow
-                                ? [
-                                    const BoxShadow(
-                                      color: Colors.black26,
+                            Positioned(
+                              bottom: 20,
+                              left: 20,
+                              child: Container(
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  // color: theme.colorScheme.surface
+                                  //     .withOpacity(0.9),
+                                  borderRadius: BorderRadius.circular(16),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.1),
                                       blurRadius: 10,
-                                      offset: Offset(0, 5),
-                                    )
-                                  ]
-                                : null,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    if (isShowStats)
+                                      Column(
+                                        children: [
+                                          const SizedBox(height: 16),
+                                          Row(
+                                            children: [
+                                              _buildStatItem(
+                                                icon: Icons.height,
+                                                label: 'Height',
+                                                value:
+                                                    '${_height.toStringAsFixed(0)}px',
+                                                theme: theme,
+                                              ),
+                                              const SizedBox(width: 16),
+                                              _buildStatItem(
+                                                icon: Icons.width_normal,
+                                                label: 'Width',
+                                                value:
+                                                    '${_width.toStringAsFixed(0)}px',
+                                                theme: theme,
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 16),
+                                          Row(
+                                            children: [
+                                              _buildStatItem(
+                                                icon: Icons.arrow_upward,
+                                                label: 'Left Max',
+                                                value: '35 PSI',
+                                                theme: theme,
+                                              ),
+                                              const SizedBox(width: 16),
+                                              _buildStatItem(
+                                                icon: Icons.arrow_upward,
+                                                label: 'Right Max',
+                                                value: '35 PSI',
+                                                theme: theme,
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 16),
+                                          Row(
+                                            children: [
+                                              _buildStatItem(
+                                                icon: Icons.speed,
+                                                label: 'Left Current',
+                                                value: '29 PSI',
+                                                theme: theme,
+                                                valueColor: Colors.green,
+                                              ),
+                                              const SizedBox(width: 16),
+                                              _buildStatItem(
+                                                icon: Icons.speed,
+                                                label: 'Right Current',
+                                                value: '31 PSI',
+                                                theme: theme,
+                                                valueColor: Colors.green,
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    const SizedBox(height: 16),
+                                    // Add more stats here if needed
+
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          'Stats',
+                                          style: theme.textTheme.titleLarge
+                                              ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          width: 20,
+                                        ),
+                                        Switch(
+                                            value: isShowStats,
+                                            onChanged: (val) {
+                                              setState(() {
+                                                isShowStats = val;
+                                              });
+                                            })
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                          ],
+                        )),
+                    // Right panel - Controls
+                    Expanded(
+                      flex: 2,
+                      child: Container(
+                        // color: const Color(0xFF1E1E2C), // Handled by theme (Scaffold background)
+                        padding: const EdgeInsets.all(16),
+                        child: SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildSectionTitle('Dimensions', theme),
+                              _buildSlider('Width', _width, 50, 300, (val) {
+                                setState(() => _width = val);
+                              }, theme),
+                              _buildSlider('Height', _height, 50, 300, (val) {
+                                setState(() => _height = val);
+                              }, theme),
+                              Divider(color: theme.dividerColor),
+                              _buildSectionTitle('Appearance', theme),
+                              _buildColorPicker('Color', _color, (val) {
+                                setState(() => _color = val);
+                              }, theme),
+                              _buildSlider('Opacity', _opacity, 0, 1, (val) {
+                                setState(() => _opacity = val);
+                              }, theme),
+                              _buildSlider(
+                                  'Border Radius', _borderRadius, 0, 150,
+                                  (val) {
+                                setState(() => _borderRadius = val);
+                              }, theme),
+                              Divider(color: theme.dividerColor),
+                              _buildSectionTitle('Border', theme),
+                              _buildColorPicker('Border Color', _borderColor,
+                                  (val) {
+                                setState(() => _borderColor = val);
+                              }, theme),
+                              _buildSlider('Border Width', _borderWidth, 0, 10,
+                                  (val) {
+                                setState(() => _borderWidth = val);
+                              }, theme),
+                              Divider(color: theme.dividerColor),
+                              _buildSectionTitle('Effects', theme),
+                              _buildSlider('Rotation (°)', _rotation, 0, 360,
+                                  (val) {
+                                setState(() => _rotation = val);
+                              }, theme),
+                              _buildSwitchOption('Shadow', _hasShadow, (val) {
+                                setState(() => _hasShadow = val);
+                              }, theme),
+                            ],
                           ),
                         ),
                       ),
-                    ),
-                  ),
-                ),
-                // Right panel - Controls
-                Expanded(
-                  flex: 2,
-                  child: Container(
-                    color: const Color(0xFF1E1E2C),
-                    padding: const EdgeInsets.all(16),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildSectionTitle('Dimensions'),
-                          _buildSlider('Width', _width, 50, 300, (val) {
-                            setState(() => _width = val);
-                          }),
-                          _buildSlider('Height', _height, 50, 300, (val) {
-                            setState(() => _height = val);
-                          }),
-                          const Divider(color: Color(0xFF3D3D54)),
-                          _buildSectionTitle('Appearance'),
-                          _buildColorPicker('Color', _color, (val) {
-                            setState(() => _color = val);
-                          }),
-                          _buildSlider('Opacity', _opacity, 0, 1, (val) {
-                            setState(() => _opacity = val);
-                          }),
-                          _buildSlider('Border Radius', _borderRadius, 0, 150,
-                              (val) {
-                            setState(() => _borderRadius = val);
-                          }),
-                          const Divider(color: Color(0xFF3D3D54)),
-                          _buildSectionTitle('Border'),
-                          _buildColorPicker('Border Color', _borderColor,
-                              (val) {
-                            setState(() => _borderColor = val);
-                          }),
-                          _buildSlider('Border Width', _borderWidth, 0, 10,
-                              (val) {
-                            setState(() => _borderWidth = val);
-                          }),
-                          const Divider(color: Color(0xFF3D3D54)),
-                          _buildSectionTitle('Effects'),
-                          _buildSlider('Rotation (°)', _rotation, 0, 360,
-                              (val) {
-                            setState(() => _rotation = val);
-                          }),
-                          _buildSwitchOption('Shadow', _hasShadow, (val) {
-                            setState(() => _hasShadow = val);
-                          }),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          // Code section
-          Container(
-            height: 200,
-            color: const Color(0xFF0D0D15),
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Generated Code',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.copy, color: Colors.white),
-                      onPressed: () {
-                        Clipboard.setData(ClipboardData(text: _generatedCode));
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Code copied to clipboard'),
-                            backgroundColor: Color(0xFF2D2D44),
-                          ),
-                        );
-                      },
                     ),
                   ],
                 ),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF1E1E2C),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: SingleChildScrollView(
-                      child: Text(
-                        _generatedCode,
-                        style: const TextStyle(
-                          color: Color(0xFFB8B8D2),
-                          fontFamily: 'monospace',
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+              ),
+              const SizedBox(
+                height: 100,
+              )
+              // "View Code" button section
+            ],
+          ),
+          Positioned.fill(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              // child: codingSection(context, theme),
+              child: CodeSection(
+                  height: codingBoxheight,
+                  onHeightChanged: (changedHight) {
+                    setState(() {
+                      codingBoxheight = changedHight;
+                    });
+                  },
+                  markdownCode: _markdownCode,
+                  markdownData: _markdownData),
             ),
           ),
+
+          // _buildCodeOverlay(context), // Add the overlay to the stack
         ],
       ),
     );
   }
 
-  Widget _buildSectionTitle(String title) {
+  GestureDetector codingSection(BuildContext context, ThemeData theme) {
+    return GestureDetector(
+      onPanUpdate: (dragUpdate) {
+        var newPosition = dragUpdate.delta;
+
+        //update the height of the container with codingBoxheight variable that is directly linked to the height of the container
+        setState(() {
+          codingBoxheight -= newPosition.dy;
+        });
+      },
+      child: Container(
+        constraints: BoxConstraints(
+          minHeight: 100,
+          maxHeight: MediaQuery.of(context).size.height,
+        ),
+        height: codingBoxheight, // Not needed anymore
+
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surfaceVariant, // Use a theme color
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(12),
+            topRight: Radius.circular(12),
+          ),
+          border: Border.all(
+            color: theme.dividerColor.withAlpha(30),
+            width: 1,
+          ),
+        ),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Code Preview',
+                  style: theme.textTheme.titleMedium
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                const Icon(Icons.drag_handle_outlined),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton.icon(
+                    icon: const Icon(Icons.code),
+                    label: const Text('Copy Code'),
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(
+                          color: theme.dividerColor.withAlpha(30),
+                          width: 1,
+                        ),
+                      ),
+                      foregroundColor: theme.primaryColorLight,
+                      backgroundColor: Colors.transparent,
+                      iconColor: theme.primaryColorLight,
+                      textStyle: TextStyle(color: theme.primaryColorLight),
+                    ),
+
+                    onPressed: () {
+                      Clipboard.setData(ClipboardData(text: _markdownCode));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: const Text('Code copied to clipboard'),
+                          backgroundColor:
+                              theme.colorScheme.secondary, // Use theme color
+                        ),
+                      );
+                    },
+                    // Style from ElevatedButtonTheme
+                  ),
+                ),
+              ],
+            ),
+            Expanded(
+              child: Container(
+                color: Colors.black,
+                child: Markdown(
+                  // controller: controller,
+                  selectable: true,
+                  data: _markdownData(),
+                  styleSheet: MarkdownStyleSheet(
+                    code: TextStyle(
+                      color: theme.primaryColorLight,
+                      fontSize: 16,
+                      backgroundColor: Colors.transparent,
+                    ),
+                    codeblockDecoration: const BoxDecoration(
+                      color: Colors.transparent,
+                    ),
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title, ThemeData theme) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Text(
         title,
-        style: const TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-          fontSize: 16,
-        ),
+        style: theme.textTheme.titleLarge
+            ?.copyWith(fontSize: 16), // Use theme text style
       ),
     );
   }
@@ -235,6 +482,7 @@ class MyWidget extends StatelessWidget {
     double min,
     double max,
     Function(double) onChanged,
+    ThemeData theme,
   ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -244,21 +492,25 @@ class MyWidget extends StatelessWidget {
           children: [
             Text(
               label,
-              style: const TextStyle(color: Color(0xFFB8B8D2)),
+              style: theme.textTheme.bodyMedium, // Use theme text style
             ),
             Text(
               value.toStringAsFixed(1),
-              style: const TextStyle(color: Color(0xFFB8B8D2)),
+              style: theme.textTheme.bodyMedium, // Use theme text style
             ),
           ],
         ),
         SliderTheme(
-          data: SliderThemeData(
-            activeTrackColor: Colors.blue,
-            inactiveTrackColor: const Color(0xFF3D3D54),
-            thumbColor: Colors.white,
-            overlayColor: Colors.blue.withOpacity(0.2),
+          data: SliderTheme.of(context).copyWith(
+            // Copy from context and override
+            activeTrackColor: theme.colorScheme.primary,
+            inactiveTrackColor: theme.colorScheme.primary.withOpacity(0.3),
+            thumbColor: theme.colorScheme
+                .onPrimary, // Or theme.colorScheme.primary for a solid thumb
+            overlayColor: theme.colorScheme.primary.withOpacity(0.2),
             trackHeight: 4,
+            thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 8.0),
+            overlayShape: const RoundSliderOverlayShape(overlayRadius: 16.0),
           ),
           child: Slider(
             value: value,
@@ -272,29 +524,16 @@ class MyWidget extends StatelessWidget {
   }
 
   Widget _buildColorPicker(
-      String label, Color color, Function(Color) onChanged) {
+      String label, Color color, Function(Color) onChanged, ThemeData theme) {
+    // ... existing code ...
     final List<Color> colors = [
-      Colors.red,
-      Colors.pink,
-      Colors.purple,
-      Colors.deepPurple,
-      Colors.indigo,
-      Colors.blue,
-      Colors.lightBlue,
-      Colors.cyan,
-      Colors.teal,
-      Colors.green,
-      Colors.lightGreen,
-      Colors.lime,
-      Colors.yellow,
-      Colors.amber,
+      // Keep this list or make it themeable if desired
+      Colors.red, Colors.pink, Colors.purple, Colors.deepPurple, Colors.indigo,
+      Colors.blue, Colors.lightBlue, Colors.cyan, Colors.teal, Colors.green,
+      Colors.lightGreen, Colors.lime, Colors.yellow, Colors.amber,
       Colors.orange,
-      Colors.deepOrange,
-      Colors.brown,
-      Colors.grey,
-      Colors.blueGrey,
-      Colors.black,
-      Colors.white,
+      Colors.deepOrange, Colors.brown, Colors.grey, Colors.blueGrey,
+      Colors.black, Colors.white,
     ];
 
     return Column(
@@ -305,7 +544,7 @@ class MyWidget extends StatelessWidget {
           children: [
             Text(
               label,
-              style: const TextStyle(color: Color(0xFFB8B8D2)),
+              style: theme.textTheme.bodyMedium, // Use theme text style
             ),
             Container(
               width: 24,
@@ -313,7 +552,8 @@ class MyWidget extends StatelessWidget {
               decoration: BoxDecoration(
                 color: color,
                 borderRadius: BorderRadius.circular(4),
-                border: Border.all(color: Colors.white30),
+                border: Border.all(
+                    color: theme.colorScheme.onSurface.withOpacity(0.5)),
               ),
             ),
           ],
@@ -336,7 +576,8 @@ class MyWidget extends StatelessWidget {
                     borderRadius: BorderRadius.circular(4),
                     border: Border.all(
                       color: colors[index] == color
-                          ? Colors.white
+                          ? theme.colorScheme
+                              .primary // Highlight selected color with theme primary
                           : Colors.transparent,
                       width: 2,
                     ),
@@ -351,20 +592,119 @@ class MyWidget extends StatelessWidget {
   }
 
   Widget _buildSwitchOption(
-      String label, bool value, Function(bool) onChanged) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(color: Color(0xFFB8B8D2)),
+      String label, bool value, Function(bool) onChanged, ThemeData theme) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surface,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: theme.shadowColor.withOpacity(0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
-        Switch(
-          value: value,
-          onChanged: onChanged,
-          activeColor: Colors.blue,
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    value ? Icons.check_circle : Icons.radio_button_unchecked,
+                    color: value
+                        ? theme.colorScheme.primary
+                        : theme.colorScheme.onSurface.withOpacity(0.5),
+                    size: 20,
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    label,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+              Transform.scale(
+                scale: 0.8,
+                child: Switch(
+                  value: value,
+                  onChanged: onChanged,
+                  activeColor: theme.colorScheme.primary,
+                  activeTrackColor: theme.colorScheme.primary.withOpacity(0.3),
+                  inactiveThumbColor:
+                      theme.colorScheme.onSurface.withOpacity(0.5),
+                  inactiveTrackColor:
+                      theme.colorScheme.onSurface.withOpacity(0.1),
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+              ),
+            ],
+          ),
         ),
-      ],
+      ),
     );
   }
+}
+
+Widget _buildStatItem({
+  IconData? icon,
+  required String label,
+  required String value,
+  required ThemeData theme,
+  Color? valueColor,
+}) {
+  return Container(
+    padding: const EdgeInsets.all(12),
+    decoration: BoxDecoration(
+      color: theme.colorScheme.surface,
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(
+        color: theme.colorScheme.outline.withOpacity(0.2),
+      ),
+      boxShadow: [
+        BoxShadow(
+          color: theme.shadowColor.withOpacity(0.1),
+          blurRadius: 8,
+          offset: const Offset(0, 2),
+        ),
+      ],
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          children: [
+            if (icon != null)
+              Icon(
+                icon,
+                size: 16,
+                color: theme.colorScheme.primary,
+              ),
+            if (icon != null) const SizedBox(width: 8),
+            Text(
+              label,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurface.withOpacity(0.7),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Text(
+          value,
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: valueColor ?? theme.colorScheme.onSurface,
+          ),
+        ),
+      ],
+    ),
+  );
 }

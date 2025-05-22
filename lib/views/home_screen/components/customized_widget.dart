@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_canvas/helper/route_helper.dart';
+import 'package:flutter_canvas/views/customized_widget/two_side_arc_gauge_screen.dart';
 import 'package:flutter_canvas/views/home_screen/components/widget_card.dart';
 
 class CustomizedWidgetSection extends StatelessWidget {
@@ -35,13 +36,18 @@ class CustomizedWidgetSection extends StatelessWidget {
             crossAxisSpacing: 16,
             children: [
               WidgetCard(
-                title: 'Container',
-                icon: Icons.crop_square_rounded,
-                iconColor: Colors.blue,
+                title: "Arc Gauge",
+                icon: Icons.generating_tokens_outlined,
+                iconColor: Colors.teal,
                 onTap: () => Navigator.pushNamed(
                   context,
-                  RouteHelper.containerScreen,
+                  RouteHelper.towSideArcGaugeStudioScreen,
                 ),
+                displayWidget: TyrePressureAnimationWidget(
+                    rearTyrePressure: 20,
+                    frontTyrePressure: 30,
+                    bgColor: Colors.white,
+                    sideBgColor: Colors.white),
               ),
             ],
           ),
