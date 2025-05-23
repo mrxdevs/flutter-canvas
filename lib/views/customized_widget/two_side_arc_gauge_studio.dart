@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_canvas/views/customized_widget/two_side_arc.dart';
 import 'package:provider/provider.dart';
 
 import 'package:flutter_canvas/component/code_section.dart';
@@ -43,6 +44,7 @@ class _TwoSideArcGaugeStudioState extends State<TwoSideArcGaugeStudio> {
   double _leftMax = 29;
   double _rightMax = 31;
   bool isLeftArrow = true;
+  bool newCanvas = false;
 
   @override
   void didChangeDependencies() {
@@ -97,13 +99,25 @@ class _TwoSideArcGaugeStudioState extends State<TwoSideArcGaugeStudio> {
                                 child: _StudioCanvas(
                                   width: width,
                                   height: height,
-                                  child: TyrePressureAnimationWidget(
-                                    rearTyrePressure: _rearTyrePressure,
-                                    frontTyrePressure: _frontTyrePressure,
-                                    bgColor: Colors.grey,
-                                    sideBgColor: Colors.white,
-                                    arrowSide: ArrowSide.left,
-                                  ),
+                                  child: !newCanvas
+                                      ? TyrePressureAnimationWidget(
+                                          rearTyrePressure: _rearTyrePressure,
+                                          frontTyrePressure: _frontTyrePressure,
+                                          bgColor: Colors.grey,
+                                          sideBgColor: Colors.white,
+                                          arrowSide: isLeftArrow
+                                              ? ArrowSide.left
+                                              : ArrowSide.right,
+                                        )
+                                      : TyrePressureAnimationWidget2(
+                                          rearTyrePressure: _rearTyrePressure,
+                                          frontTyrePressure: _frontTyrePressure,
+                                          bgColor: Colors.grey,
+                                          sideBgColor: Colors.white,
+                                          arrowSide: isLeftArrow
+                                              ? ArrowSide.left
+                                              : ArrowSide.right,
+                                        ),
                                 ),
                               ),
                             ),
@@ -256,17 +270,41 @@ class _TwoSideArcGaugeStudioState extends State<TwoSideArcGaugeStudio> {
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Text('Stats',
-                    style: theme.textTheme.titleLarge
-                        ?.copyWith(fontWeight: FontWeight.bold)),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text('Stats',
+                        style: theme.textTheme.titleLarge
+                            ?.copyWith(fontWeight: FontWeight.bold)),
+                    const SizedBox(width: 20),
+                    Switch(
+                        thumbColor: MaterialStatePropertyAll(Colors.white),
+                        value: showStats,
+                        onChanged: (va) {
+                          setState(() {
+                            showStats = !showStats;
+                          });
+                        }),
+                  ],
+                ),
                 const SizedBox(width: 20),
-                Switch(
-                    value: showStats,
-                    onChanged: (va) {
-                      setState(() {
-                        showStats = !showStats;
-                      });
-                    }),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text('New Arc',
+                        style: theme.textTheme.titleLarge
+                            ?.copyWith(fontWeight: FontWeight.bold)),
+                    const SizedBox(width: 20),
+                    Switch(
+                        thumbColor: MaterialStatePropertyAll(Colors.white),
+                        value: newCanvas,
+                        onChanged: (va) {
+                          setState(() {
+                            newCanvas = !newCanvas;
+                          });
+                        }),
+                  ],
+                ),
               ],
             ),
           ],
@@ -459,18 +497,20 @@ class _StudioControls extends StatelessWidget {
                       Expanded(
                         child: CustomSliderWidget(
                             label: 'Arrow Max ',
-                            value: arrowCurrent,
+                            value: arrowMax,
                             min: 0,
-                            max: rightMax > leftMax ? rightMax : leftMax,
+                            max: 50,
                             onChanged: onArrowMaxChanged ?? (_) {}),
                       ),
                       const SizedBox(width: 16),
                       Expanded(
                         child: CustomSliderWidget(
                             label: "Arrow Current",
-                            value: height,
+                            value: arrowMax > arrowCurrent
+                                ? arrowCurrent
+                                : arrowMax,
                             min: 0,
-                            max: maxHeight,
+                            max: arrowMax,
                             onChanged: onArrowCurrentChanged ?? (_) {}),
                       ),
                     ],
