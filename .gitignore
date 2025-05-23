@@ -12,6 +12,13 @@
 .swiftpm/
 migrate_working_dir/
 # build/
+build/6cddb76d9424e1d92502639f2b47fd08/
+build/flutter_assets/
+build/ios/
+build/native_assets/
+build/macos/
+build/cache.dill.track.dill/
+macos/
 
 # IntelliJ related
 *.iml
