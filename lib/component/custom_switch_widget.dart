@@ -39,23 +39,11 @@ class CustomSwitchOption extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Icon(
-                    value ? Icons.check_circle : Icons.radio_button_unchecked,
-                    color: value
-                        ? theme.colorScheme.primary
-                        : theme.colorScheme.onSurface.withOpacity(0.5),
-                    size: 20,
-                  ),
-                  const SizedBox(width: 12),
-                  Text(
-                    label,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
+              Text(
+                label,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
               ),
               Transform.scale(
                 scale: scale,

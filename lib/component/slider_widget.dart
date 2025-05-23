@@ -40,8 +40,8 @@ class CustomSliderWidget extends StatelessWidget {
           data: SliderTheme.of(context).copyWith(
             activeTrackColor: theme.colorScheme.primary,
             inactiveTrackColor: theme.colorScheme.primary.withOpacity(0.3),
-            thumbColor: theme.colorScheme.onPrimary,
-            overlayColor: theme.colorScheme.primary.withOpacity(0.2),
+            thumbColor: theme.primaryColorLight,
+            overlayColor: theme.primaryColorLight.withOpacity(0.2),
             trackHeight: 4,
             thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 8.0),
             overlayShape: const RoundSliderOverlayShape(overlayRadius: 16.0),
@@ -53,6 +53,7 @@ class CustomSliderWidget extends StatelessWidget {
             onChanged: onChanged,
           ),
         ),
+        const SizedBox(height: 4),
       ],
     );
   }

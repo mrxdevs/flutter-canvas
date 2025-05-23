@@ -12,7 +12,7 @@ class EditSectionTitle extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       decoration: BoxDecoration(
-        border: Border.all(color: theme.colorScheme.primary),
+        border: Border.all(color: theme.colorScheme.primary.withAlpha(100)),
         borderRadius: BorderRadius.circular(8.0),
       ),
       child: Column(

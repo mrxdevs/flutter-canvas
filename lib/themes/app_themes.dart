@@ -5,11 +5,11 @@ import 'package:google_fonts/google_fonts.dart';
 class AppThemes {
   static final ThemeData lightTheme = ThemeData(
     brightness: Brightness.light,
-    primaryColor: AppColors.lightPrimary,
+    primaryColor: AppColors.darkPrimary,
     scaffoldBackgroundColor: AppColors.lightBackground,
     colorScheme: const ColorScheme.light(
-      primary: AppColors.lightPrimary,
-      secondary: AppColors.lightPrimary, // You can define a secondary color
+      primary: AppColors.darkPrimary,
+      secondary: AppColors.darkPrimary, // You can define a secondary color
       background: AppColors.lightBackground,
       surface: AppColors.lightSurface,
       onPrimary: AppColors.lightOnPrimary,

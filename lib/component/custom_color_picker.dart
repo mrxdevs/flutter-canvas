@@ -53,6 +53,7 @@ class CustomColorPicker extends StatelessWidget {
             Container(
               width: 24,
               height: 24,
+              // margin: const EdgeInsets.only(bottom: 24),
               decoration: BoxDecoration(
                 color: selectedColor,
                 borderRadius: BorderRadius.circular(4),
@@ -90,6 +91,7 @@ class CustomColorPicker extends StatelessWidget {
             },
           ),
         ),
+        const SizedBox(height: 24),
       ],
     );
   }

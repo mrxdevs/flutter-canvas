@@ -18,7 +18,7 @@ build/ios/
 build/native_assets/
 build/macos/
 build/cache.dill.track.dill/
-macos/
+# macos/
 
 # IntelliJ related
 *.iml
