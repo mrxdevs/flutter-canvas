@@ -137,16 +137,25 @@ class TyerMeterPainter extends CustomPainter {
     final h = size.height;
 
     final double arcRadius = w * 2;
-    final arcStrokeWidth = 10.0;
-    final triangleGap = 20.0; // Distance from arc
-    final triangleSize = 24.0; // Side length of triangle
+    const arcStrokeWidth = 10.0;
+    const triangleGap = 20.0; // Distance from arc
+    const triangleSize = 24.0; // Side length of triangle
     final center = Offset(w / 2, arcRadius);
 
+    // paint for all five arcs
     final Paint arcPaint = Paint()
       ..color = Colors.red.withAlpha(100)
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
       ..strokeWidth = arcStrokeWidth;
+
+    final Paint arcLeftBgPaint = arcPaint;
+    arcLeftBgPaint.color = Colors.white;
+    final Paint arcLeftPaint = arcPaint;
+    arcLeftPaint.color = Colors.red;
+    final Paint arcRightBgPaint = arcPaint;
+    arcRightBgPaint.color = Colors.white;
+    final Paint arcRightPaint = arcPaint..color = Colors.green;
 
     final Rect arcRect = Rect.fromCircle(center: center, radius: arcRadius);
     const double startAngle = 180 + 80;
@@ -166,9 +175,6 @@ class TyerMeterPainter extends CustomPainter {
       triangleSize: triangleSize,
       angle: triangleAngle,
     );
-    // canvas.save();
-    // canvas.clipRect(arcRect);
-    // canvas.restore();
   }
 
   void drawRotatingTriangle({
