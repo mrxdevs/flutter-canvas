@@ -135,32 +135,88 @@ class TyerMeterPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final w = size.width;
     final h = size.height;
-    final centerX = w / 2;
-    final centerY = h / 2;
 
-    final center = Offset(centerX, h * 1.5); // Your existing center
+    final double arcRadius = w * 2;
+    final arcStrokeWidth = 10.0;
+    final triangleGap = 20.0; // Distance from arc
+    final triangleSize = 24.0; // Side length of triangle
+    final center = Offset(w / 2, arcRadius);
 
-    // Example: Draw a red arc
     final Paint arcPaint = Paint()
-      ..color = Colors.red
-      ..style = PaintingStyle.stroke // Or PaintingStyle.fill
-      ..strokeWidth = 5.0;
+      ..color = Colors.red.withAlpha(100)
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = arcStrokeWidth;
 
-    // Define the bounding rectangle for the arc
-    // For example, an arc centered in the widget, with a radius of 50
-    final Rect arcRect =
-        Rect.fromCircle(center: Offset(centerX, centerY), radius: centerY);
+    final Rect arcRect = Rect.fromCircle(center: center, radius: arcRadius);
+    const double startAngle = 180 + 80;
+    const double sweepAngle = 20;
+    // Update this line:
+    final triangleAngle = startAngle + (percentage / 32 * sweepAngle);
+    canvas.drawArc(arcRect, angleToRadians(startAngle),
+        angleToRadians(sweepAngle), false, arcPaint);
 
-    // Define start and sweep angles (in radians)
-    // 0 radians is 3 o'clock. pi radians is 180 degrees.
-    const double startAngle = 0; // Start at 3 o'clock
-    const double sweepAngle = -180; // Draw a semicircle (180 degrees)
+    // Draw triangle outside arc, rotating with angle
+    drawRotatingTriangle(
+      canvas: canvas,
+      center: center,
+      arcRadius: arcRadius,
+      arcStrokeWidth: arcStrokeWidth,
+      triangleGap: triangleGap,
+      triangleSize: triangleSize,
+      angle: triangleAngle,
+    );
+    // canvas.save();
+    // canvas.clipRect(arcRect);
+    // canvas.restore();
+  }
 
-    // Draw the arc
-    canvas.drawArc(
-        arcRect, startAngle, angleToRadians(sweepAngle), false, arcPaint);
+  void drawRotatingTriangle({
+    required Canvas canvas,
+    required Offset center,
+    required double arcRadius,
+    required double arcStrokeWidth,
+    required double triangleGap,
+    required double triangleSize,
+    required double angle,
+  }) {
+    final Paint trianglePaint = Paint()
+      ..color = Colors.green
+      ..style = PaintingStyle.fill;
 
-    // You can add more drawing logic here for your tyre pressure gauge
+    // Calculate the point on the arc where the triangle should be placed
+    final double rad = angleToRadians(angle);
+    final double triangleDistance =
+        arcRadius + arcStrokeWidth / 2 + triangleGap + triangleSize / 2;
+    final Offset triangleCenter = Offset(
+      center.dx + triangleDistance * cos(rad),
+      center.dy + triangleDistance * sin(rad),
+    );
+
+    // Triangle points (equilateral, pointing outward)
+    final double baseAngle = rad + pi / 2;
+    final double halfBase = triangleSize / 2;
+    final double height = triangleSize * sqrt(3) / 2;
+    final Offset p1 = Offset(
+      triangleCenter.dx - height * cos(rad),
+      triangleCenter.dy - height * sin(rad),
+    );
+    final Offset p2 = Offset(
+      triangleCenter.dx + halfBase * cos(baseAngle),
+      triangleCenter.dy + halfBase * sin(baseAngle),
+    );
+    final Offset p3 = Offset(
+      triangleCenter.dx - halfBase * cos(baseAngle),
+      triangleCenter.dy - halfBase * sin(baseAngle),
+    );
+
+    final Path trianglePath = Path()
+      ..moveTo(p1.dx, p1.dy)
+      ..lineTo(p2.dx, p2.dy)
+      ..lineTo(p3.dx, p3.dy)
+      ..close();
+
+    canvas.drawPath(trianglePath, trianglePaint);
   }
 
   @override

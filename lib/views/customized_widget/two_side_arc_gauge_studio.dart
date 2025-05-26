@@ -22,8 +22,8 @@ class TwoSideArcGaugeStudio extends StatefulWidget {
 }
 
 class _TwoSideArcGaugeStudioState extends State<TwoSideArcGaugeStudio> {
-  double width = 200;
-  double height = 200;
+  double width = 600;
+  double height = 600;
   Color color = Colors.blue;
   double borderRadius = 0;
   double opacity = 1.0;

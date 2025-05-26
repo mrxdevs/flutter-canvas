@@ -43,7 +43,21 @@ class CustomizedWidgetSection extends StatelessWidget {
                   context,
                   RouteHelper.towSideArcGaugeStudioScreen,
                 ),
-                displayWidget: TyrePressureAnimationWidget(
+                displayWidget: const TyrePressureAnimationWidget(
+                    rearTyrePressure: 20,
+                    frontTyrePressure: 30,
+                    bgColor: Colors.white,
+                    sideBgColor: Colors.white),
+              ),
+              WidgetCard(
+                title: "Arc Progress",
+                icon: Icons.architecture_outlined,
+                iconColor: Colors.redAccent,
+                onTap: () => Navigator.pushNamed(
+                  context,
+                  RouteHelper.arcProgressBarStudioScreen,
+                ),
+                displayWidget: const TyrePressureAnimationWidget(
                     rearTyrePressure: 20,
                     frontTyrePressure: 30,
                     bgColor: Colors.white,
