@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_canvas/helper/route_helper.dart';
-import 'package:flutter_canvas/views/customized_widget/two_side_arc_gauge_screen.dart';
+import 'package:flutter_canvas/views/customized_widget/two_side_arc_gauge/two_side_arc_gauge_screen.dart';
 import 'package:flutter_canvas/views/home_screen/components/widget_card.dart';
 
 class CustomizedWidgetSection extends StatelessWidget {
@@ -51,6 +51,62 @@ class CustomizedWidgetSection extends StatelessWidget {
               ),
               WidgetCard(
                 title: "Arc Progress",
+                icon: Icons.architecture_outlined,
+                iconColor: Colors.redAccent,
+                onTap: () => Navigator.pushNamed(
+                  context,
+                  RouteHelper.arcProgressBarStudioScreen,
+                ),
+                displayWidget: const TyrePressureAnimationWidget(
+                    rearTyrePressure: 20,
+                    frontTyrePressure: 30,
+                    bgColor: Colors.white,
+                    sideBgColor: Colors.white),
+              ),
+              WidgetCard(
+                title: "Charge Left",
+                icon: Icons.architecture_outlined,
+                iconColor: Colors.redAccent,
+                onTap: () => Navigator.pushNamed(
+                  context,
+                  RouteHelper.arcProgressBarStudioScreen,
+                ),
+                displayWidget: const TyrePressureAnimationWidget(
+                    rearTyrePressure: 20,
+                    frontTyrePressure: 30,
+                    bgColor: Colors.white,
+                    sideBgColor: Colors.white),
+              ),
+              WidgetCard(
+                title: "Tyre Pressure",
+                icon: Icons.architecture_outlined,
+                iconColor: Colors.redAccent,
+                onTap: () => Navigator.pushNamed(
+                  context,
+                  RouteHelper.arcProgressBarStudioScreen,
+                ),
+                displayWidget: const TyrePressureAnimationWidget(
+                    rearTyrePressure: 20,
+                    frontTyrePressure: 30,
+                    bgColor: Colors.white,
+                    sideBgColor: Colors.white),
+              ),
+              WidgetCard(
+                title: "Renge Mode Arc",
+                icon: Icons.architecture_outlined,
+                iconColor: Colors.redAccent,
+                onTap: () => Navigator.pushNamed(
+                  context,
+                  RouteHelper.arcProgressBarStudioScreen,
+                ),
+                displayWidget: const TyrePressureAnimationWidget(
+                    rearTyrePressure: 20,
+                    frontTyrePressure: 30,
+                    bgColor: Colors.white,
+                    sideBgColor: Colors.white),
+              ),
+              WidgetCard(
+                title: "Oddo Meter",
                 icon: Icons.architecture_outlined,
                 iconColor: Colors.redAccent,
                 onTap: () => Navigator.pushNamed(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_canvas/views/customized_widget/arc_progress_bar.dart/arc_progress_bar_studio.dart';
-import 'package:flutter_canvas/views/customized_widget/two_side_arc_gauge_studio.dart';
+import 'package:flutter_canvas/views/customized_widget/arc_progress_bar/arc_progress_bar_studio.dart';
+import 'package:flutter_canvas/views/customized_widget/two_side_arc_gauge/two_side_arc_gauge_studio.dart';
 
 import 'package:flutter_canvas/views/home_screen/home_screen.dart';
 
