@@ -69,7 +69,7 @@ class CustomizedWidgetSection extends StatelessWidget {
                 iconColor: Colors.redAccent,
                 onTap: () => Navigator.pushNamed(
                   context,
-                  RouteHelper.arcProgressBarStudioScreen,
+                  RouteHelper.chargeLeftArcStudio,
                 ),
                 displayWidget: const TyrePressureAnimationWidget(
                     rearTyrePressure: 20,
@@ -83,7 +83,7 @@ class CustomizedWidgetSection extends StatelessWidget {
                 iconColor: Colors.redAccent,
                 onTap: () => Navigator.pushNamed(
                   context,
-                  RouteHelper.arcProgressBarStudioScreen,
+                  RouteHelper.tyrePressureArcStudio,
                 ),
                 displayWidget: const TyrePressureAnimationWidget(
                     rearTyrePressure: 20,
@@ -92,12 +92,12 @@ class CustomizedWidgetSection extends StatelessWidget {
                     sideBgColor: Colors.white),
               ),
               WidgetCard(
-                title: "Renge Mode Arc",
+                title: "Range Mode Arc",
                 icon: Icons.architecture_outlined,
                 iconColor: Colors.redAccent,
                 onTap: () => Navigator.pushNamed(
                   context,
-                  RouteHelper.arcProgressBarStudioScreen,
+                  RouteHelper.rangeModeArcStudio,
                 ),
                 displayWidget: const TyrePressureAnimationWidget(
                     rearTyrePressure: 20,
@@ -111,7 +111,7 @@ class CustomizedWidgetSection extends StatelessWidget {
                 iconColor: Colors.redAccent,
                 onTap: () => Navigator.pushNamed(
                   context,
-                  RouteHelper.arcProgressBarStudioScreen,
+                  RouteHelper.oddoArcStudio,
                 ),
                 displayWidget: const TyrePressureAnimationWidget(
                     rearTyrePressure: 20,

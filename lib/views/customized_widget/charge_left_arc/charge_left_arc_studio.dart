@@ -107,6 +107,9 @@ class _ChargeLeftArcStudioState extends State<ChargeLeftArcStudio> {
                               ),
                             ),
                             _statsUI(theme),
+                            IconButton(
+                                onPressed: () {},
+                                icon: const Icon(Icons.restart_alt))
                           ],
                         ),
                       ),

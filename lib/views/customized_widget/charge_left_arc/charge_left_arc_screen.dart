@@ -9,13 +9,15 @@ class ChargeLeftArc extends StatefulWidget {
   final ArrowSide? arrowSide;
   final Color? bgColor;
   final Color? sideBgColor;
+  final VoidCallback? replayAnimation;
   const ChargeLeftArc(
       {super.key,
       required this.rearTyrePressure,
       required this.frontTyrePressure,
       this.arrowSide = ArrowSide.None,
       this.bgColor,
-      this.sideBgColor});
+      this.sideBgColor,
+      this.replayAnimation});
 
   @override
   State<ChargeLeftArc> createState() => _ChargeLeftArcAnimationWidgetState();
@@ -33,6 +35,7 @@ class _ChargeLeftArcAnimationWidgetState extends State<ChargeLeftArc>
       vsync: this,
       duration: const Duration(seconds: 2),
     );
+
     _animation = Tween<double>(begin: 0, end: 32).animate(_controller);
     _controller.forward();
   }
@@ -46,6 +49,10 @@ class _ChargeLeftArcAnimationWidgetState extends State<ChargeLeftArc>
       _animation = Tween<double>(begin: 0, end: 32).animate(_controller);
       _controller.forward();
     }
+  }
+
+  void replayAnimation() {
+    _controller.repeat();
   }
 
   @override
