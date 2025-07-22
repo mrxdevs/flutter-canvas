@@ -46,6 +46,8 @@ class _ChargeLeftArcStudioState extends State<ChargeLeftArcStudio> {
   bool isLeftArrow = true;
   bool newCanvas = false;
 
+  final _arcController = ChargeLeftArcController();
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -100,15 +102,18 @@ class _ChargeLeftArcStudioState extends State<ChargeLeftArcStudio> {
                                 child: _StudioCanvas(
                                   width: width,
                                   height: height,
-                                  child: const ChargeLeftArc(
-                                      rearTyrePressure: 29,
-                                      frontTyrePressure: 31),
+                                  child: ChargeLeftArc(
+                                    value: 50,
+                                    controller: _arcController,
+                                  ),
                                 ),
                               ),
                             ),
                             _statsUI(theme),
                             IconButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  _arcController.replay();
+                                },
                                 icon: const Icon(Icons.restart_alt))
                           ],
                         ),

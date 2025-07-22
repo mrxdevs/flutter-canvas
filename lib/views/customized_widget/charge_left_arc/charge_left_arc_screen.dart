@@ -3,21 +3,30 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_canvas/views/customized_widget/two_side_arc_gauge/two_side_arc_gauge_screen.dart';
 
+class ChargeLeftArcController {
+  // This will hold a reference to the private state's replay function.
+  VoidCallback? _replayAnimation;
+
+  /// Triggers the replay animation on the associated ChargeLeftArc widget.
+  void replay() {
+    _replayAnimation?.call();
+  }
+}
+
 class ChargeLeftArc extends StatefulWidget {
-  final double rearTyrePressure;
-  final double frontTyrePressure;
+  final double value;
+
   final ArrowSide? arrowSide;
   final Color? bgColor;
   final Color? sideBgColor;
-  final VoidCallback? replayAnimation;
+  final ChargeLeftArcController? controller;
   const ChargeLeftArc(
       {super.key,
-      required this.rearTyrePressure,
-      required this.frontTyrePressure,
+      required this.value,
       this.arrowSide = ArrowSide.None,
       this.bgColor,
       this.sideBgColor,
-      this.replayAnimation});
+      this.controller});
 
   @override
   State<ChargeLeftArc> createState() => _ChargeLeftArcAnimationWidgetState();
@@ -25,154 +34,148 @@ class ChargeLeftArc extends StatefulWidget {
 
 class _ChargeLeftArcAnimationWidgetState extends State<ChargeLeftArc>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
+  late AnimationController _animationController;
   late Animation<double> _animation;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
+    _animationController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
     );
 
-    _animation = Tween<double>(begin: 0, end: 32).animate(_controller);
-    _controller.forward();
+    _animation = Tween<double>(begin: 0, end: 1).animate(_animationController);
+    widget.controller?._replayAnimation = _replay;
+    _animationController.forward();
+  }
+
+  void repeatAnimation() {
+    _animationController.repeat();
   }
 
   @override
   void didUpdateWidget(covariant ChargeLeftArc oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.rearTyrePressure != widget.rearTyrePressure ||
-        oldWidget.frontTyrePressure != widget.frontTyrePressure) {
-      _controller.reset();
-      _animation = Tween<double>(begin: 0, end: 32).animate(_controller);
-      _controller.forward();
+
+    if (widget.controller != oldWidget.controller) {
+      widget.controller?._replayAnimation = _replay;
+    }
+    if (oldWidget.value != widget.value) {
+      _animationController.reset();
+      _animation =
+          Tween<double>(begin: 0, end: 1).animate(_animationController);
+      _animationController.forward();
+      _replay();
     }
   }
 
-  void replayAnimation() {
-    _controller.repeat();
+  void _replay() {
+    _animationController.reset();
+    _animationController.forward();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _controller.forward();
+    _animationController.forward();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-        animation: _controller,
+        animation: _animationController,
         builder: (context, child) {
           return CustomPaint(
             painter: ChargeLeftArcPainter(
-                percentage: _animation.value,
-                rightTyrePressure:
-                    widget.rearTyrePressure > 32 ? 32 : widget.rearTyrePressure,
-                leftTyrePressure: widget.frontTyrePressure > 29
-                    ? 29
-                    : widget.frontTyrePressure,
-                bgColor: widget.bgColor ?? Colors.grey,
-                sideBgColor: widget.sideBgColor ?? Colors.white,
-                arrowSide: widget.arrowSide,
-                leftProgressColor: (widget.frontTyrePressure < 24 ||
-                        widget.frontTyrePressure > 29)
-                    ? Colors.red
-                    : Colors.green, //for front tyre
-                rightProgressColor: (widget.rearTyrePressure < 27 ||
-                        widget.rearTyrePressure > 32)
-                    ? Colors.red
-                    : Colors.green, //for rear tyre
-                progressArrowColor: Colors.white,
-                arrowSize: 5,
-                gapSize: 2),
+                percentage: _animation.value, value: widget.value),
           );
         });
   }
 }
 
 class ChargeLeftArcPainter extends CustomPainter {
-  final ArrowSide? arrowSide;
   final double percentage;
-  final double leftTyrePressure;
-  final double rightTyrePressure;
-  final Color? bgColor;
-  final Color? leftProgressColor;
-  final Color? rightProgressColor;
-  final Color? progressArrowColor;
-  final Color? gradiant1;
-  final Color? gradiant2;
-  final double? barWidth;
-  final double? gradiantWidth;
-  final double? arrowSize;
-  final double? gapSize;
+  final double value;
 
-  final Color? sideBgColor;
+  final Color? bgColor;
+  final PaintingStyle? arcBgStyle;
+  final StrokeCap? arcBgStroke;
+  final double? arcBgWidth;
+  final PaintingStyle? arcFrStyle;
+  final StrokeCap? arcFrStroke;
+  final double? arcFrWidth;
+  final double? triangleSize;
+  final double? triangleGap;
 
   ChargeLeftArcPainter(
-      {this.arrowSide = ArrowSide.None,
-      this.sideBgColor,
-      super.repaint,
-      required this.leftTyrePressure,
-      required this.rightTyrePressure,
+      {super.repaint,
       required this.percentage,
+      required this.value,
       this.bgColor,
-      this.leftProgressColor,
-      this.rightProgressColor,
-      this.progressArrowColor,
-      this.gradiant1,
-      this.gradiant2,
-      this.barWidth,
-      this.gradiantWidth,
-      this.gapSize,
-      this.arrowSize});
+      this.triangleGap,
+      this.triangleSize,
+      this.arcBgWidth,
+      this.arcBgStroke,
+      this.arcBgStyle,
+      this.arcFrWidth,
+      this.arcFrStroke,
+      this.arcFrStyle});
 
   @override
   void paint(Canvas canvas, Size size) {
     final w = size.width;
-    final h = size.height;
 
     final double arcRadius = w * 2;
-    final arcStrokeWidth = 10.0;
-    final triangleGap = 20.0; // Distance from arc
-    final triangleSize = 24.0; // Side length of triangle
+
+    // const triangleGap = 5.0; // Distance from arc
+    // const triangleSize = 10.0; // Side length of triangle
     final center = Offset(w / 2, arcRadius);
 
-    final Paint arcPaint = Paint()
-      ..color = Colors.red.withAlpha(100)
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round
-      ..strokeWidth = arcStrokeWidth;
+    final Paint arcBgPaint = Paint()
+      ..color = bgColor ?? Colors.white
+      ..style = arcBgStyle ?? PaintingStyle.stroke
+      ..strokeCap = arcBgStroke ?? StrokeCap.round
+      ..strokeWidth = arcBgWidth ?? 0;
+    final Paint arcFrPaint = Paint()
+      ..color = bgColor ?? Colors.green
+      ..style = arcFrStyle ?? PaintingStyle.stroke
+      ..strokeCap = arcFrStroke ?? StrokeCap.round
+      ..strokeWidth = arcFrWidth ?? 10;
 
     final Rect arcRect = Rect.fromCircle(center: center, radius: arcRadius);
-    const double startAngle = 180 + 80;
+    const double startAngle = 260;
+    // 180 + 80;
     const double sweepAngle = 20;
+    final getAnglePercentage = (value / 100) * sweepAngle;
+    print(percentage);
+    final animateAngle = getAnglePercentage * percentage;
+
     // Update this line:
-    final triangleAngle = startAngle + (percentage / 32 * sweepAngle);
+
+    final triangleAngle = startAngle + animateAngle;
+
     canvas.drawArc(arcRect, angleToRadians(startAngle),
-        angleToRadians(sweepAngle), false, arcPaint);
+        angleToRadians(sweepAngle), false, arcBgPaint);
+    canvas.drawArc(arcRect, angleToRadians(startAngle),
+        angleToRadians(getAnglePercentage * percentage), false, arcFrPaint);
 
     // Draw triangle outside arc, rotating with angle
     drawRotatingTriangle(
       canvas: canvas,
       center: center,
       arcRadius: arcRadius,
-      arcStrokeWidth: arcStrokeWidth,
-      triangleGap: triangleGap,
-      triangleSize: triangleSize,
+      arcStrokeWidth: arcFrWidth ?? 10,
+      triangleGap: triangleGap ?? 10,
+      triangleSize: triangleSize ?? 10,
       angle: triangleAngle,
     );
-    // canvas.save();
-    // canvas.clipRect(arcRect);
-    // canvas.restore();
   }
 
   void drawRotatingTriangle({
