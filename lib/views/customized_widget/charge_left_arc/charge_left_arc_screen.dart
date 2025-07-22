@@ -1,7 +1,7 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_canvas/views/customized_widget/two_side_arc_gauge/two_side_arc_gauge_screen.dart';
 
 class ChargeLeftArcController {
   // This will hold a reference to the private state's replay function.
@@ -16,16 +16,32 @@ class ChargeLeftArcController {
 class ChargeLeftArc extends StatefulWidget {
   final double value;
 
-  final ArrowSide? arrowSide;
   final Color? bgColor;
-  final Color? sideBgColor;
+  final Color? frColor;
+  final Color? triangleColor;
+  final PaintingStyle? arcBgStyle;
+  final StrokeCap? arcBgStroke;
+  final double? arcBgWidth;
+  final PaintingStyle? arcFrStyle;
+  final StrokeCap? arcFrStroke;
+  final double? arcFrWidth;
+  final double? triangleSize;
+  final double? triangleGap;
   final ChargeLeftArcController? controller;
   const ChargeLeftArc(
       {super.key,
       required this.value,
-      this.arrowSide = ArrowSide.None,
       this.bgColor,
-      this.sideBgColor,
+      this.frColor,
+      this.triangleColor,
+      this.arcBgStyle,
+      this.arcBgStroke,
+      this.arcBgWidth,
+      this.arcFrStyle,
+      this.arcFrStroke,
+      this.arcFrWidth,
+      this.triangleSize,
+      this.triangleGap,
       this.controller});
 
   @override
@@ -94,7 +110,19 @@ class _ChargeLeftArcAnimationWidgetState extends State<ChargeLeftArc>
         builder: (context, child) {
           return CustomPaint(
             painter: ChargeLeftArcPainter(
-                percentage: _animation.value, value: widget.value),
+                percentage: _animation.value,
+                value: widget.value,
+                bgColor: widget.bgColor,
+                frColor: widget.frColor,
+                triangleColor: widget.triangleColor,
+                triangleGap: widget.triangleGap,
+                triangleSize: widget.triangleSize,
+                arcBgStroke: widget.arcBgStroke,
+                arcBgStyle: widget.arcBgStyle,
+                arcBgWidth: widget.arcBgWidth,
+                arcFrStroke: widget.arcFrStroke,
+                arcFrStyle: widget.arcFrStyle,
+                arcFrWidth: widget.arcFrWidth),
           );
         });
   }
@@ -105,6 +133,8 @@ class ChargeLeftArcPainter extends CustomPainter {
   final double value;
 
   final Color? bgColor;
+  final Color? frColor;
+  final Color? triangleColor;
   final PaintingStyle? arcBgStyle;
   final StrokeCap? arcBgStroke;
   final double? arcBgWidth;
@@ -119,6 +149,8 @@ class ChargeLeftArcPainter extends CustomPainter {
       required this.percentage,
       required this.value,
       this.bgColor,
+      this.frColor,
+      this.triangleColor,
       this.triangleGap,
       this.triangleSize,
       this.arcBgWidth,
@@ -144,7 +176,7 @@ class ChargeLeftArcPainter extends CustomPainter {
       ..strokeCap = arcBgStroke ?? StrokeCap.round
       ..strokeWidth = arcBgWidth ?? 0;
     final Paint arcFrPaint = Paint()
-      ..color = bgColor ?? Colors.green
+      ..color = frColor ?? Colors.green
       ..style = arcFrStyle ?? PaintingStyle.stroke
       ..strokeCap = arcFrStroke ?? StrokeCap.round
       ..strokeWidth = arcFrWidth ?? 10;
@@ -188,7 +220,7 @@ class ChargeLeftArcPainter extends CustomPainter {
     required double angle,
   }) {
     final Paint trianglePaint = Paint()
-      ..color = Colors.green
+      ..color = triangleColor ?? Colors.yellow
       ..style = PaintingStyle.fill;
 
     // Calculate the point on the arc where the triangle should be placed
