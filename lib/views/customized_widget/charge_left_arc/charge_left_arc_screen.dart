@@ -167,7 +167,7 @@ class ChargeLeftArcPainter extends CustomPainter {
     final double arcRadius = w * 2;
 
     // const triangleGap = 5.0; // Distance from arc
-    // const triangleSize = 10.0; // Side length of triangle
+    // const triangleSize = 10.0; // Side length of triangl
     final center = Offset(w / 2, arcRadius);
     final double gradientArcWidth = 50;
     final Rect arcRectGr = Rect.fromCircle(

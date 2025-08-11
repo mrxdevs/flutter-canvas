@@ -3,6 +3,7 @@ import 'package:flutter_canvas/views/customized_widget/arc_progress_bar/arc_prog
 import 'package:flutter_canvas/views/customized_widget/charge_left_arc/charge_left_arc_studio.dart';
 import 'package:flutter_canvas/views/customized_widget/oddo_meter_arc/oddo_meter_studio.dart';
 import 'package:flutter_canvas/views/customized_widget/two_side_arc_gauge/two_side_arc_gauge_studio.dart';
+import 'package:flutter_canvas/views/customized_widget/tyre_pressure_arc/tyre_pressure_arc_studio.dart';
 
 import 'package:flutter_canvas/views/home_screen/home_screen.dart';
 
@@ -27,5 +28,6 @@ class RouteHelper {
     arcProgressBarStudioScreen: (context) => const ArcProgressBarStudio(),
     chargeLeftArcStudio: (context) => const ChargeLeftArcStudio(),
     oddoArcStudio: (context) => const OddoMeterArcStudio(),
+    tyrePressureArcStudio: (context) => const TyrePressureArcStudio(),
   };
 }
