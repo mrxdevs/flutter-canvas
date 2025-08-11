@@ -169,6 +169,9 @@ class ChargeLeftArcPainter extends CustomPainter {
     // const triangleGap = 5.0; // Distance from arc
     // const triangleSize = 10.0; // Side length of triangle
     final center = Offset(w / 2, arcRadius);
+    final double gradientArcWidth = 50;
+    final Rect arcRectGr = Rect.fromCircle(
+        center: center, radius: arcRadius - gradientArcWidth / 2);
 
     final Paint arcBgPaint = Paint()
       ..color = bgColor ?? Colors.white
@@ -181,12 +184,28 @@ class ChargeLeftArcPainter extends CustomPainter {
       ..strokeCap = arcFrStroke ?? StrokeCap.round
       ..strokeWidth = arcFrWidth ?? 10;
 
+    final Paint arcGrPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.square
+      ..shader = SweepGradient(
+        center: Alignment.center,
+        startAngle: angleToRadians(260),
+        endAngle: angleToRadians(280),
+        colors: [
+          Colors.green.withOpacity(0.7),
+          Colors.green.withOpacity(0.3),
+          Colors.green.withOpacity(0.0),
+        ],
+        stops: const [0.0, 0.5, 1.0],
+        transform: GradientRotation(angleToRadians(260)),
+      ).createShader(arcRectGr) // Use the same rect for the shader
+      ..strokeWidth = gradientArcWidth;
+
     final Rect arcRect = Rect.fromCircle(center: center, radius: arcRadius);
     const double startAngle = 260;
     // 180 + 80;
     const double sweepAngle = 20;
     final getAnglePercentage = (value / 100) * sweepAngle;
-    print(percentage);
     final animateAngle = getAnglePercentage * percentage;
 
     // Update this line:
@@ -197,6 +216,13 @@ class ChargeLeftArcPainter extends CustomPainter {
         angleToRadians(sweepAngle), false, arcBgPaint);
     canvas.drawArc(arcRect, angleToRadians(startAngle),
         angleToRadians(getAnglePercentage * percentage), false, arcFrPaint);
+    canvas.drawArc(
+      arcRectGr,
+      angleToRadians(startAngle),
+      angleToRadians(getAnglePercentage * percentage),
+      false,
+      arcGrPaint,
+    );
 
     // Draw triangle outside arc, rotating with angle
     drawRotatingTriangle(
