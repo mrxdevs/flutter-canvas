@@ -3,7 +3,6 @@ import 'package:flutter_canvas/component/custom_color_picker.dart';
 import 'package:flutter_canvas/component/custom_switch_widget.dart';
 import 'package:flutter_canvas/component/stats_card.dart';
 import 'package:flutter_canvas/providers/theme_notifier.dart';
-import 'package:flutter_canvas/views/customized_widget/arc_progress_bar/arc_cercular_bar.dart';
 import 'package:provider/provider.dart';
 
 import 'package:flutter_canvas/component/code_section.dart';

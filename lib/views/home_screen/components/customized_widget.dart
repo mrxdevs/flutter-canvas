@@ -92,7 +92,7 @@ class CustomizedWidgetSection extends StatelessWidget {
                     sideBgColor: Colors.white),
               ),
               WidgetCard(
-                title: "Range Mode Arc",
+                title: "Range Arc",
                 icon: Icons.architecture_outlined,
                 iconColor: Colors.redAccent,
                 onTap: () => Navigator.pushNamed(

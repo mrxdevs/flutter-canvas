@@ -3,22 +3,23 @@ import 'package:flutter_canvas/component/custom_color_picker.dart';
 import 'package:flutter_canvas/component/custom_switch_widget.dart';
 import 'package:flutter_canvas/component/stats_card.dart';
 import 'package:flutter_canvas/providers/theme_notifier.dart';
-
-import 'package:flutter_canvas/views/customized_widget/oddo_meter_arc/oddo_meter_arc_screen.dart';
+import 'package:flutter_canvas/views/customized_widget/range_mode_arc/range_mode_arc_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'package:flutter_canvas/component/code_section.dart';
 import 'package:flutter_canvas/component/edit_section_title.dart';
 import 'package:flutter_canvas/component/slider_widget.dart';
 
-class OddoMeterArcStudio extends StatefulWidget {
-  const OddoMeterArcStudio({super.key});
+enum CodeOverlayState { hidden, normal, maximized }
+
+class RangeModeArcStudio extends StatefulWidget {
+  const RangeModeArcStudio({super.key});
 
   @override
-  State<OddoMeterArcStudio> createState() => _OddoMeterArcStudioState();
+  State<RangeModeArcStudio> createState() => _RangeModeArcStudioState();
 }
 
-class _OddoMeterArcStudioState extends State<OddoMeterArcStudio> {
+class _RangeModeArcStudioState extends State<RangeModeArcStudio> {
   double width = 600;
   double height = 600;
   Color color = Colors.blue;
@@ -43,7 +44,7 @@ class _OddoMeterArcStudioState extends State<OddoMeterArcStudio> {
   bool isLeftArrow = true;
   bool newCanvas = false;
 
-  final _arcController = OddoMeterArcController();
+  final _arcController = RangeModeArcController();
 
   @override
   void didChangeDependencies() {
@@ -64,7 +65,7 @@ class _OddoMeterArcStudioState extends State<OddoMeterArcStudio> {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Oddo Meter Arc'),
+        title: const Text('Range Mode Arc'),
         centerTitle: true,
         actions: [
           Padding(
@@ -99,7 +100,7 @@ class _OddoMeterArcStudioState extends State<OddoMeterArcStudio> {
                                 child: _StudioCanvas(
                                   width: width,
                                   height: height,
-                                  child: OddoMeterArc(
+                                  child: RangeModeArc(
                                     value: 50,
                                     controller: _arcController,
                                   ),

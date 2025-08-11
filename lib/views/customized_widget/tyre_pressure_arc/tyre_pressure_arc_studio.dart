@@ -3,7 +3,6 @@ import 'package:flutter_canvas/component/custom_color_picker.dart';
 import 'package:flutter_canvas/component/custom_switch_widget.dart';
 import 'package:flutter_canvas/component/stats_card.dart';
 import 'package:flutter_canvas/providers/theme_notifier.dart';
-import 'package:flutter_canvas/views/customized_widget/arc_progress_bar/arc_cercular_bar.dart';
 import 'package:flutter_canvas/views/customized_widget/tyre_pressure_arc/tyre_pressure_arc_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -66,7 +65,7 @@ class _TyrePressureArcStudioState extends State<TyrePressureArcStudio> {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Charge Left'),
+        title: const Text('Tyre Pressure Arc'),
         centerTitle: true,
         actions: [
           Padding(
