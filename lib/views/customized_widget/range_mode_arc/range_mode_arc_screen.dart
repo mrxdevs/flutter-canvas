@@ -28,21 +28,23 @@ class RangeModeArc extends StatefulWidget {
   final double? triangleSize;
   final double? triangleGap;
   final RangeModeArcController? controller;
-  const RangeModeArc(
-      {super.key,
-      required this.value,
-      this.bgColor,
-      this.frColor,
-      this.triangleColor,
-      this.arcBgStyle,
-      this.arcBgStroke,
-      this.arcBgWidth,
-      this.arcFrStyle,
-      this.arcFrStroke,
-      this.arcFrWidth,
-      this.triangleSize,
-      this.triangleGap,
-      this.controller});
+
+  const RangeModeArc({
+    super.key,
+    required this.value,
+    this.bgColor,
+    this.frColor,
+    this.triangleColor,
+    this.arcBgStyle,
+    this.arcBgStroke,
+    this.arcBgWidth,
+    this.arcFrStyle,
+    this.arcFrStroke,
+    this.arcFrWidth,
+    this.triangleSize,
+    this.triangleGap,
+    this.controller,
+  });
 
   @override
   State<RangeModeArc> createState() => _RangeModeArcAnimationWidgetState();
@@ -144,21 +146,22 @@ class RangeModeArcPainter extends CustomPainter {
   final double? triangleSize;
   final double? triangleGap;
 
-  RangeModeArcPainter(
-      {super.repaint,
-      required this.percentage,
-      required this.value,
-      this.bgColor,
-      this.frColor,
-      this.triangleColor,
-      this.triangleGap,
-      this.triangleSize,
-      this.arcBgWidth,
-      this.arcBgStroke,
-      this.arcBgStyle,
-      this.arcFrWidth,
-      this.arcFrStroke,
-      this.arcFrStyle});
+  RangeModeArcPainter({
+    super.repaint,
+    required this.percentage,
+    required this.value,
+    this.bgColor,
+    this.frColor,
+    this.triangleColor,
+    this.triangleGap,
+    this.triangleSize,
+    this.arcBgWidth,
+    this.arcBgStroke,
+    this.arcBgStyle,
+    this.arcFrWidth,
+    this.arcFrStroke,
+    this.arcFrStyle,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -184,38 +187,48 @@ class RangeModeArcPainter extends CustomPainter {
     //Left Arc
     final Rect arcRect = Rect.fromCircle(center: center, radius: arcRadius);
 
+    //Gradiant Rectangle
     final Rect arcRect1 =
-        Rect.fromCircle(center: center, radius: arcRadius - 25);
+        Rect.fromCircle(center: center, radius: arcRadius - 20);
     const double startAngle = 260;
 
     const double gap = 20 / 3;
     const triangleAngle = startAngle + gap / 2;
 
+    // ONLY FIXED THIS GRADIENT PART (moved after startAngle and gap are declared):
+    final Paint arcGradientPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 50
+      ..shader = SweepGradient(
+        center: Alignment.center,
+        startAngle:
+            angleToRadians(startAngle - 10), // Start slightly before your arc
+        endAngle: angleToRadians(
+            startAngle + gap + 10), // End slightly after your arc
+        colors: [
+          Colors.transparent,
+          Colors.green.withValues(alpha: 0.1),
+          Colors.greenAccent.withValues(alpha: 0.5),
+          Colors.green.withValues(alpha: 0.1),
+          Colors.transparent,
+        ],
+        stops: const [0.0, 0.2, 0.5, 0.8, 1.0],
+      ).createShader(Rect.fromCircle(center: center, radius: arcRadius));
+
     //Backgroud Arc
-    int index = 2;
-    canvas.drawArc(
-        arcRect1,
-        angleToRadians(startAngle + (gap * (index - 1))),
-        angleToRadians(gap),
-        false,
-        arcModePaint
-          ..color = Colors.greenAccent.withValues(alpha: 0.3)
-          ..strokeCap = StrokeCap.square
-          ..strokeWidth = 40);
+    int index = 1;
+
+    //Gradiant Arc
+    canvas.drawArc(arcRect1, angleToRadians(startAngle + (gap * (index - 1))),
+        angleToRadians(gap), false, arcGradientPaint);
 
     canvas.drawArc(arcRect, angleToRadians(startAngle), angleToRadians(20),
         false, arcBgPaint..color = Colors.white);
 
     //Mode Arc
-    canvas.drawArc(
-        arcRect,
-        angleToRadians(startAngle + (gap * (index - 1))),
-        angleToRadians(gap),
-        false,
-        arcModePaint
-          ..color = Colors.green
-          ..strokeWidth = 10
-          ..strokeCap = StrokeCap.round);
+    canvas.drawArc(arcRect, angleToRadians(startAngle + (gap * (index - 1))),
+        angleToRadians(gap), false, arcModePaint);
 
     // Draw triangle outside arc, rotating with angle
     drawRotatingTriangle(
@@ -227,6 +240,50 @@ class RangeModeArcPainter extends CustomPainter {
       triangleSize: triangleSize ?? 10,
       angle: triangleAngle + (gap * (index - 1)),
     );
+
+    //Text: Need to fix rotation angle also need to adjust the start point so it looks in center
+    drawText(
+      canvas: canvas,
+      center: center,
+      arcRadius: arcRadius - 40,
+      arcStrokeWidth: arcFrWidth ?? 10,
+      triangleGap: triangleGap ?? 10,
+      triangleSize: triangleSize ?? 10,
+      angle: triangleAngle + (gap * (index - 1)),
+    );
+  }
+
+  void drawText({
+    required Canvas canvas,
+    required Offset center,
+    required double arcRadius,
+    required double arcStrokeWidth,
+    required double triangleGap,
+    required double triangleSize,
+    required double angle,
+  }) {
+    final tp = TextPainter(
+      text: const TextSpan(
+        text: 'Yrfc',
+        style: TextStyle(
+          color: Colors.teal,
+          fontSize: 14,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      textDirection: TextDirection.ltr,
+    );
+
+    tp.layout();
+    final textOffset = angleToOffset(center, angle,
+        arcRadius + arcStrokeWidth / 2 + triangleGap + triangleSize / 2);
+
+    canvas.save();
+    canvas.translate(textOffset.dx, textOffset.dy);
+    double rotationAngle = angle + 90;
+    canvas.rotate(angleToRadians(rotationAngle));
+    tp.paint(canvas, Offset(-tp.width / 2, -tp.height / 2));
+    canvas.restore();
   }
 
   void drawRotatingTriangle({
